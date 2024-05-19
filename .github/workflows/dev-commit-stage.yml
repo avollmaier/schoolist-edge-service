@@ -10,7 +10,6 @@ env:
   IMAGE_NAME: ${{ github.repository }}
   VERSION: ${{ github.sha }}
   CI: CI
-  NATIVE_IMAGE_ENABLED: enabled
 
 permissions:
   packages: write
