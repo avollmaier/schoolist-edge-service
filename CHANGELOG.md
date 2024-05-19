@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/avollmaier/schoolist-edge-service/compare/v1.0.0...v1.1.0) (2024-05-19)
+
+
+### Features
+
+* **edge-service:** add package-lock ([dbb4325](https://github.com/avollmaier/schoolist-edge-service/commit/dbb4325c360b2e1a9dcff8698f5b4e8b2199b0f9))
+
 # 1.0.0 (2024-05-19)
 
 
