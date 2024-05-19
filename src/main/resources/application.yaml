@@ -1,18 +1,74 @@
 server:
   port: 9000
   shutdown: graceful
-  tomcat:
+  netty:
     connection-timeout: 2s
-    keep-alive-timeout: 15s
-    threads:
-      max: 50
-      min-spare: 5
+    idle-timeout: 15s
+
 
 spring:
+  session:
+    redis:
+      namespace: schoolist:edge
+
   application:
     name: edge-service
   lifecycle:
     timeout-per-shutdown-phase: 15s
+  cloud:
+    gateway:
+      httpclient:
+        connect-timeout: 2000 # 2s
+        response-timeout: 5s
+        pool:
+          type: elastic
+          max-idle-time: 15s
+          max-life-time: 60s
+      default-filters:
+        - SaveSession
+        - TokenRelay
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter:
+              replenishRate: 10
+              burstCapacity: 20
+              requestedTokens: 1
+        - name: Retry
+          args:
+            retries: 3
+            methods: GET
+            series: SERVER_ERROR
+            exceptions: java.io.IOException, java.util.concurrent.TimeoutException
+            backoff:
+              firstBackoff: 50ms
+              maxBackOff: 500ms
+              factor: 2
+              basedOnPreviousValue: false
+      routes:
+        - id: spa-route
+          uri: ${SPA_URL:http://localhost:3000}
+          predicates:
+            - Path=/, /dashboard,/favicon.ico, /_next/**
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: ${spring.application.name}
+            client-secret: ${AUTH_CLIENT_SECRET}
+            scope: openid, profile, email, roles
+        provider:
+          keycloak:
+            issuer-uri: ${AUTH_ISSUER_URI}
+
+  data:
+    redis:
+      connect-timeout: 2s
+      timeout: 2s
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      username: ${REDIS_USERNAME:redis}
+      password: ${REDIS_PASSWORD:redis}
 
 logging:
   pattern:
@@ -20,7 +76,6 @@ logging:
 
 info:
   system: schoolist
-
 
 management:
   endpoints:
@@ -33,6 +88,9 @@ management:
       show-components: always
       probes:
         enabled: true
+      group:
+        readiness:
+          include: readinessState,redis
   info:
     env:
       enabled: true
