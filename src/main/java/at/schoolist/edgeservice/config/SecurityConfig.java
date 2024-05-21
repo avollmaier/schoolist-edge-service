@@ -45,10 +45,11 @@ public class SecurityConfig {
                                                   .pathMatchers("/actuator/**").permitAll()
                                                   .pathMatchers(
                                                       "/",
+                                                      "/aggregate/**",
+                                                      "/api/docs/**",
                                                       "/favicon.ico",
                                                       "/_next/**").permitAll()
-                                                  .pathMatchers("/dashboard/**").hasAuthority("ROLE_USER")
-                                                  .pathMatchers("/calendar/**").hasRole("ROLE_PREMIUM")
+                                                  .pathMatchers("/dashboard/**").hasAuthority("ROLE_user")
                                                   .anyExchange().authenticated()
                )
                .oauth2Login(Customizer.withDefaults())

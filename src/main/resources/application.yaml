@@ -5,6 +5,15 @@ server:
     connection-timeout: 2s
     idle-timeout: 15s
 
+springdoc:
+  api-docs:
+    path: /api/docs
+  swagger-ui:
+    path: /api/docs/ui
+    urls:
+      - name: Course Service
+        url: /aggregate/course-service/v3/api-docs
+
 
 spring:
   session:
@@ -49,17 +58,27 @@ spring:
           uri: ${SPA_URL:http://localhost:3000}
           predicates:
             - Path=/, /dashboard,/favicon.ico, /_next/**
+        - id: course-service
+          uri: ${COURSE_SERVICE_URL:http://localhost:9001}/courses
+          predicates:
+            - Path=/courses/**
+        - id: course-service-docs
+          uri: ${COURSE_SERVICE_URL:http://localhost:9001}
+          filters:
+            - SetPath=/api-docs
+          predicates:
+            - Path=/aggregate/course-service/v3/api-docs
   security:
     oauth2:
       client:
         registration:
           keycloak:
             client-id: ${spring.application.name}
-            client-secret: ${AUTH_CLIENT_SECRET}
+            client-secret: ${AUTH_CLIENT_SECRET:schoolist-keycloak-secret}
             scope: openid, profile, email, roles
         provider:
           keycloak:
-            issuer-uri: ${AUTH_ISSUER_URI}
+            issuer-uri: ${AUTH_ISSUER_URI:http://localhost:8080/auth/realms/schoolist}
 
   data:
     redis:

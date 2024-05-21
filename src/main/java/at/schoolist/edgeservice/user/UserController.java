@@ -1,5 +1,7 @@
 package at.schoolist.edgeservice.user;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
 import java.util.Collection;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
@@ -12,6 +14,7 @@ import reactor.core.publisher.Mono;
 
 @RestController
 @Slf4j
+@OpenAPIDefinition(info=@Info(title="Edge-Service API", version="1.0", description="Documentation Edge-Service API v1.0"))
 public class UserController {
 
   private static final String REALM_ACCESS_CLAIM = "realm_access";
