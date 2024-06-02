@@ -7,12 +7,16 @@ server:
 
 springdoc:
   api-docs:
-    path: /api/docs
+    path: /api-docs
   swagger-ui:
-    path: /api/docs/ui
+    path: /api-docs/ui
     urls:
+      - name: Edge Service
+        url: /api-docs
+      - name: User Service
+        url: /aggregate/user-service/v1/api-docs
       - name: Course Service
-        url: /aggregate/course-service/v3/api-docs
+        url: /aggregate/course-service/v1/api-docs
 
 
 spring:
@@ -54,20 +58,18 @@ spring:
               factor: 2
               basedOnPreviousValue: false
       routes:
-        - id: spa-route
-          uri: ${SPA_URL:http://localhost:3000}
-          predicates:
-            - Path=/, /dashboard,/favicon.ico, /_next/**
-        - id: course-service
-          uri: ${COURSE_SERVICE_URL:http://localhost:9001}/courses
-          predicates:
-            - Path=/courses/**
-        - id: course-service-docs
-          uri: ${COURSE_SERVICE_URL:http://localhost:9001}
+        - id: user-service-docs
+          uri: ${USER_SERVICE_URL:http://localhost:9001}
           filters:
             - SetPath=/api-docs
           predicates:
-            - Path=/aggregate/course-service/v3/api-docs
+            - Path=/aggregate/user-service/v1/api-docs
+        - id: course-service-docs
+          uri: ${COURSE_SERVICE_URL:http://localhost:9002}
+          filters:
+            - SetPath=/api-docs
+          predicates:
+            - Path=/aggregate/course-service/v1/api-docs
   security:
     oauth2:
       client:

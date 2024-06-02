@@ -42,14 +42,16 @@ public class SecurityConfig {
   SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http, ReactiveClientRegistrationRepository clientRegistrationRepository) {
     return http
                .authorizeExchange(exchange -> exchange
-                                                  .pathMatchers("/actuator/**").permitAll()
                                                   .pathMatchers(
                                                       "/",
+                                                      "**.css",
+                                                      "**.js",
+                                                      "**.png",
+                                                      "/api-docs/**",
                                                       "/aggregate/**",
-                                                      "/api/docs/**",
-                                                      "/favicon.ico",
-                                                      "/_next/**").permitAll()
-                                                  .pathMatchers("/dashboard/**").hasAuthority("ROLE_user")
+                                                      "/actuator/**",
+                                                      "/favicon.ico").permitAll()
+                                                  .pathMatchers("/dashboard/**").hasAuthority("ROLE_USER")
                                                   .anyExchange().authenticated()
                )
                .oauth2Login(Customizer.withDefaults())
@@ -94,13 +96,14 @@ public class SecurityConfig {
           var roles = (Collection<String>) realmAccess.get(ROLES_CLAIM);
           mappedAuthorities.addAll(generateAuthoritiesFromClaim(roles));
         }
-      } else {
+      }
+      else {
         var oauth2UserAuthority = (OAuth2UserAuthority) authority;
         Map<String, Object> userAttributes = oauth2UserAuthority.getAttributes();
 
         if (userAttributes.containsKey(REALM_ACCESS_CLAIM)) {
-          var realmAccess =  (Map<String,Object>) userAttributes.get(REALM_ACCESS_CLAIM);
-          var roles =  (Collection<String>) realmAccess.get(ROLES_CLAIM);
+          var realmAccess = (Map<String, Object>) userAttributes.get(REALM_ACCESS_CLAIM);
+          var roles = (Collection<String>) realmAccess.get(ROLES_CLAIM);
           mappedAuthorities.addAll(generateAuthoritiesFromClaim(roles));
         }
       }
